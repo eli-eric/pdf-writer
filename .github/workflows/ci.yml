@@ -1,0 +1,128 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test (go ${{ matrix.go }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The oldest supported release, plus whatever is current.
+        go: ['1.21', 'oldstable', 'stable']
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go }}
+
+      # poppler gives the tests an independent PDF parser, so generated files
+      # are verified by something other than the code that wrote them. Tests
+      # needing it skip when it is absent, so install it to be sure they run.
+      - name: Install poppler-utils
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+
+      - name: Test
+        run: go test -race -coverprofile=coverage.out ./...
+
+      - name: Coverage
+        run: go tool cover -func=coverage.out | tail -1
+
+  cross-platform:
+    name: build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      # No poppler here; the round-trip tests skip and the rest still run.
+      - run: go test ./...
+
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: gofmt
+        run: |
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "These files are not gofmt'd:"
+            echo "$unformatted"
+            gofmt -d .
+            exit 1
+          fi
+
+      - name: go vet
+        run: go vet ./...
+
+      - name: staticcheck
+        uses: dominikh/staticcheck-action@v1
+        with:
+          version: latest
+          install-go: false
+
+  no-dependencies:
+    name: no dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      # Depending only on the standard library is this package's main
+      # promise, so it is enforced rather than trusted.
+      - name: Assert go.mod declares no requirements
+        run: |
+          if grep -qE '^\s*require' go.mod; then
+            echo "go.mod has gained a dependency:"
+            grep -nE '^\s*require' -A5 go.mod
+            exit 1
+          fi
+          if [ -f go.sum ]; then
+            echo "go.sum exists, so something is being depended on"
+            cat go.sum
+            exit 1
+          fi
+
+      - name: Assert every import resolves to the standard library
+        run: |
+          # Standard library import paths have no dot in their first element.
+          # Anything else is either this module or a genuine dependency.
+          module=$(go list -m)
+          external=$(go list -deps ./... \
+            | grep -vE "^${module}(/|$)" \
+            | grep -E '^[^/]*\.' || true)
+          if [ -n "$external" ]; then
+            echo "non-standard-library packages in the dependency graph:"
+            echo "$external"
+            exit 1
+          fi
+          echo "dependency graph is standard library only"
+
+      - name: Tidy check
+        run: |
+          go mod tidy
+          if ! git diff --exit-code -- go.mod go.sum; then
+            echo "go mod tidy changed things; commit the result"
+            exit 1
+          fi

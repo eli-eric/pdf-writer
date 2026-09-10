@@ -1,0 +1,34 @@
+pdf-writer
+Copyright (c) 2026 ELI ERIC
+
+This product includes software developed at ELI ERIC, licensed under the MIT
+License. See LICENSE.
+
+--------------------------------------------------------------------------------
+Third-party material
+--------------------------------------------------------------------------------
+
+Standard font metrics (stdfont_metrics.go)
+
+  The generated file stdfont_metrics.go contains advance widths for the twelve
+  text fonts built into every PDF viewer (Helvetica, Times and Courier, in
+  their four styles each). These are numeric metrics -- factual measurements
+  required by the PDF format in order to lay out text in fonts the viewer
+  supplies -- and were generated from AFM metric files distributed with the URW
+  base35 font set, which are metrically compatible with Adobe's originals.
+
+  No font outlines, font programs or font software are included in or
+  distributed with this package.
+
+--------------------------------------------------------------------------------
+Fonts you embed yourself
+--------------------------------------------------------------------------------
+
+  This package embeds no fonts. When you call AddTTFFont or AddTTFFontData, the
+  font file you supply is copied into the PDF you generate.
+
+  Embedding a font is a form of redistribution. It is your responsibility to
+  confirm that the font's license permits it. Most open fonts do, and some
+  state conditions; many commercial fonts restrict or forbid embedding.
+  DejaVu, Liberation, Noto and the Google Fonts collection are all safe
+  choices, and are what the examples use.

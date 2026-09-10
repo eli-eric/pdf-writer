@@ -1,0 +1,14 @@
+version: 2
+
+updates:
+  # The package itself has no Go dependencies by design, so there is nothing
+  # for the gomod ecosystem to update. The workflow actions are the only thing
+  # here that can go stale.
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: "ci:"
+    labels:
+      - dependencies

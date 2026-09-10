@@ -1,0 +1,17 @@
+# Generated PDFs from the examples and tests
+*.pdf
+
+# Test and coverage output
+coverage.out
+coverage.html
+
+# Binaries
+/pdf-writer
+*.exe
+*.test
+
+# Editors and OS
+.idea/
+.vscode/
+*.swp
+.DS_Store

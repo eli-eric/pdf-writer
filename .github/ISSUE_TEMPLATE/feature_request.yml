@@ -1,0 +1,53 @@
+name: Feature request
+description: Suggest something the package should do
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please read the scope note first. This package deliberately does only
+        text on A4 pages with no dependencies, and proposals to add shapes,
+        images, tables or full page layout are likely to be declined in favour
+        of a library better suited to them. That is not a judgement on the
+        idea — just on where it belongs.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: >
+        Describe the problem rather than the solution. Knowing what you are
+        actually generating often suggests an approach that fits the existing
+        API.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would you like to see?
+      description: If you have an API in mind, sketch it here.
+      render: go
+    validations:
+      required: false
+
+  - type: dropdown
+    id: dependencies
+    attributes:
+      label: Would this need a dependency outside the standard library?
+      options:
+        - "No"
+        - "Yes"
+        - "Not sure"
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What have you tried?
+      description: >
+        Workarounds you have used, or other libraries you looked at and why
+        they did not fit.
+    validations:
+      required: false

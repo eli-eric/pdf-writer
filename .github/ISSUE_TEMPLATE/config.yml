@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Question about usage
+    url: https://github.com/eli-eric/pdf-writer/discussions
+    about: Ask how to do something, rather than reporting a bug.
+  - name: Package documentation
+    url: https://pkg.go.dev/github.com/eli-eric/pdf-writer
+    about: Full API reference, with runnable examples.
+  - name: Report a security vulnerability
+    url: https://github.com/eli-eric/pdf-writer/security/advisories/new
+    about: Please report vulnerabilities privately, not as a public issue.

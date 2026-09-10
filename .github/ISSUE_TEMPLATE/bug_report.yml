@@ -1,0 +1,75 @@
+name: Bug report
+description: Something produces a wrong or broken PDF
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. The most useful thing you can include is a
+        short program that reproduces the problem.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What did you expect, and what did you get instead?
+      placeholder: |
+        The text I wrote comes out overlapping itself, but only when...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproducer
+    attributes:
+      label: Reproducer
+      description: >
+        A small, complete program that shows the problem. If a specific font is
+        involved, please say which one and where it came from.
+      render: go
+      placeholder: |
+        d := pdfwriter.New()
+        d.AddPage()
+        d.SetFont(pdfwriter.Helvetica, 12)
+        d.Text(20, 20, "...")
+    validations:
+      required: false
+
+  - type: input
+    id: version
+    attributes:
+      label: pdf-writer version
+      placeholder: v0.1.0, or a commit hash
+    validations:
+      required: true
+
+  - type: input
+    id: go-version
+    attributes:
+      label: Go version
+      description: The output of `go version`
+      placeholder: go version go1.26.0 linux/amd64
+    validations:
+      required: true
+
+  - type: input
+    id: viewer
+    attributes:
+      label: Where you saw the problem
+      description: >
+        Which PDF viewer, and its version if you know it. A file that is fine
+        in one viewer and broken in another is a useful clue.
+      placeholder: Acrobat Reader, Okular, Chrome's built-in viewer, pdftotext
+    validations:
+      required: false
+
+  - type: textarea
+    id: parser-output
+    attributes:
+      label: Output of an independent parser
+      description: >
+        Optional but very helpful. If you have poppler installed, the output of
+        `pdftotext your.pdf -` and `pdfinfo your.pdf` often shows immediately
+        whether the file itself is malformed.
+      render: shell
+    validations:
+      required: false
