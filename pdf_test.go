@@ -91,7 +91,11 @@ func extract(t *testing.T, pdf []byte) string {
 	if err := os.WriteFile(path, pdf, 0o644); err != nil {
 		t.Fatal(err)
 	}
-	out, err := exec.Command("pdftotext", "-q", path, "-").Output()
+	// -enc UTF-8 is essential rather than cosmetic: older poppler builds,
+	// including the one on the Windows CI runner, default to Latin-1 output.
+	// That silently mangles the accents these tests are checking and drops
+	// characters Latin-1 has no room for, such as the euro sign.
+	out, err := exec.Command("pdftotext", "-q", "-enc", "UTF-8", path, "-").Output()
 	if err != nil {
 		t.Fatalf("pdftotext: %v", err)
 	}
